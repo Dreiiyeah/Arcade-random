@@ -52,3 +52,19 @@
 ### Fixed
 
 - Saving of logged in account
+
+## Version 6.0.0 (April 2, 2026)
+
+### Added
+
+- Number Guessing game
+
+## Version 7.0.0 (April 5, 2026)
+
+### Added
+
+- Tic Tac Toe Game
+
+### Changed
+
+- Format of outputting accounts
