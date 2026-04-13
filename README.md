@@ -27,14 +27,10 @@ An arcade based project using keys from a random password generator. It focuses 
 - time library
   - Used to pause between program execution.
 
-## Installation
-
-- Download the .py file in the repository. Then open the file in Visual Studio Code or any python compiler
-
 ## Current Features
 
 - starting(dic)
- - Lets user choose if they want to login, create account, or exit.
+  - Lets user choose if they want to login, create account, or exit.
 
 - generate_password()
   - Creates a randomly generated password.
