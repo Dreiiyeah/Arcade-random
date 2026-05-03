@@ -1,4 +1,4 @@
-# Secure Ticket Redemption System with Random Password Generator
+# Secure arcade system
 
 ## Overview
 This is a Python-based arcade system that allows users to:
