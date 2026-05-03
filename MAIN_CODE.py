@@ -1,32 +1,49 @@
-
 # Secure Ticket Redemption System with Random Password Generator
 
 import string
 import secrets
 import random
 import time
+import json
 
 # PASSWORD GENERATOR FUNCTION
 
 characters = string.ascii_lowercase + string.ascii_uppercase + string.digits + string.punctuation
 
-users = {
-    "Jeremy" : {
-      "Password" : '677777',
-      "Tickets" : 676767
-      }
-    }
+DATA_FILE = "users.json"
 
-board = ['-','-','-',
-         '-','-','-',
-         '-','-','-']
+# ---------- JSON LOAD / SAVE ----------
+
+def load_users():
+    try:
+        with open(DATA_FILE, "r") as f:
+            return json.load(f)
+    except FileNotFoundError:
+        return {
+            "Jeremy" : {
+              "Password" : '677777',
+              "Tickets" : 676767
+            }
+        }
+
+def save_users(dic):
+    with open(DATA_FILE, "w") as f:
+        json.dump(dic, f, indent=4)
+
+users = load_users()
+
+board = ['-','-','-','-','-','-','-','-','-']
 
 winner = None
+
+# ---------------- MAIN ----------------
 
 def main(dic):
   while True:
     user = starting(dic)
     options(user,dic)
+
+# ---------------- ACC DISPLAY ----------------
 
 def output_accs(Dict):
 
@@ -35,21 +52,22 @@ def output_accs(Dict):
   print(f'Username {'|':>8}Password{'|':>3}Tickets{'|':>4}')
   print('-'*39)
 
-  for key in Dict: # Gets the key
-    if len(key) >= 8: # Checks the length of key for cleanliness
+  for key in Dict:
+    if len(key) >= 8:
         print(f'{key}', end = '\t|')
     else:
         print(key, end = '\t\t|')
 
-    for nestKeys in Dict[key]: # Gets the nested keys.
-        print(f"{Dict[key][nestKeys]:<10}|", end = '') # Outputs the values of the nested dictionary.
+    for nestKeys in Dict[key]:
+        print(f"{Dict[key][nestKeys]:<10}|", end = '')
 
     print('')
 
   print('='*39)
 
+# ---------------- PASSWORD ----------------
+
 def generate_password():
-    """Generates a secure password (minimum 8 characters)."""
     while True:
         try:
             length = int(input("Enter Desired Password Length (must be >= 8 and <= 15): "))
@@ -61,6 +79,8 @@ def generate_password():
                 return password
         except ValueError:
             print("Invalid input. Please enter a whole number.")
+
+# ---------------- ACCOUNT ----------------
 
 def acc_creation(Dict):
   print("===== CREATE ACCOUNT =====")
@@ -74,8 +94,6 @@ def acc_creation(Dict):
 
   password = generate_password()
 
-
-  # Starting tickets
   tickets = 20
 
   print("\nAccount created successfully!")
@@ -86,7 +104,11 @@ def acc_creation(Dict):
   Dict[username] = {
     "Password" : password,
     "Tickets" : tickets
-    }
+  }
+
+  save_users(Dict)
+
+# ---------------- OPTIONS ----------------
 
 def options(arr,dic):
   while True:
@@ -111,6 +133,7 @@ def options(arr,dic):
       log_out()
       break
 
+# ---------------- LOGIN ----------------
 
 def log_in(Dict):
   while True:
@@ -124,7 +147,10 @@ def log_in(Dict):
         if login_pass == Dict[key]['Password']:
           tickets = Dict[key]['Tickets']
           return [login_user,login_pass,tickets]
+
     print('Login Failed. Please try again.')
+
+# ---------------- ACCOUNT ----------------
 
 def account(arr):
   print('\n===============ACCOUNT===============')
@@ -134,6 +160,8 @@ def account(arr):
     print(f'{arr[i]:<12}|', end = '')
   print('')
   print('='*39)
+
+# ---------------- REDEEM ----------------
 
 def redeem(arr,dic):
 
@@ -145,130 +173,108 @@ def redeem(arr,dic):
 
   while True:
     choice = input("Choose a prize (1-3): ")
+
     if choice == "1":
       if arr[2] >= 15:
         arr[2] -= 15
-        dic[arr[0]] = {
-    "Password" : arr[1],
-    "Tickets" : arr[2]
-    }
+        dic[arr[0]] = {"Password":arr[1],"Tickets":arr[2]}
+        save_users(dic)
         print("You redeemed a Stuffed Toy!")
       else:
         print("Not enough tickets.")
+
     elif choice == "2":
       if arr[2] >= 5:
         arr[2] -= 5
-        dic[arr[0]] = {
-    "Password" : arr[1],
-    "Tickets" : arr[2]
-    }
+        dic[arr[0]] = {"Password":arr[1],"Tickets":arr[2]}
+        save_users(dic)
         print("You redeemed a Keychain!")
       else:
         print("Not enough tickets.")
+
     elif choice == "3":
       if arr[2] >= 2:
         arr[2] -= 2
-        dic[arr[0]] = {
-    "Password" : arr[1],
-    "Tickets" : arr[2]
-    }
+        dic[arr[0]] = {"Password":arr[1],"Tickets":arr[2]}
+        save_users(dic)
         print("You have redeemed Candy!")
       else:
         print("Not enough tickets.")
+
     elif choice == "4":
       break
+
     else:
       print("Invalid input.")
 
+# ---------------- LOG OUT ----------------
+
 def log_out():
   print("Successfully logged out")
+
+# ---------------- START ----------------
 
 def starting(dic):
   while True:
     print('\n=====ARCADE=====')
     choice = input('Enter "1" to create an account \nEnter "2" to Log in\nEnter option: ')
+
     if choice == '1':
       acc_creation(dic)
+
     elif choice == '2':
       return log_in(dic)
+
     else:
       print('Invalid input.')
 
+# ---------------- GAMES ----------------
+
 def games(arr,dic):
   global board
+
   while True:
     print('\n======GAMES=====')
     print('1. Number guessing game (5 tickets per win) \n2. Tic Tac Toe (5 tickets per win) \n3. Exit')
+
     while True:
       try:
         game = int(input('Enter number of game to play: '))
         break
       except ValueError:
         print('Enter valid number.')
+
     if game == 1:
       num_guess_game(arr,dic)
+
     elif game == 2:
       player_decision(board,arr,dic)
+
     elif game == 3:
       break
-    else:
-      print('Please enter a valid number')
+
+# ---------------- GUESS GAME ----------------
 
 def num_guess_game(arr,dic):
 
   guess = random.randint(1,10)
 
   print('\n=====GUESSING GAME=====')
-  print('Im thinking of a number from 1-10. Can you guess it?')
-  print('Reminder...')
-  time.sleep(2)
-  print('Only 3 guesses')
 
   for i in range(3):
-    while True:
-      while True:
-        try:
-          user = int(input('\nEnter your guess (1-10):'))
-          break
-        except ValueError:
-          print('Enter a valid Number.')
+    try:
+      user = int(input('\nEnter your guess (1-10):'))
+    except ValueError:
+      continue
 
-      if i == 2:
-        if user <= 10 and user >= 1:
-          if user > guess:
-            print('FAILED')
-            return
-          elif user < guess:
-            print('FAILED')
-            return
-          elif user == guess:
-            print('\nCorrect! Here is your reward (5 tickets)')
-            arr[2] += 5
-            dic[arr[0]] = {
-      "Password" : arr[1],
-      "Tickets" : arr[2]
-      }
-            return
-        else:
-          print('Enter a valid number.')
+    if user == guess:
+      print('\nCorrect! Here is your reward (5 tickets)')
+      arr[2] += 5
+      dic[arr[0]] = {"Password":arr[1],"Tickets":arr[2]}
+      save_users(dic)
+      return
 
-      elif user <= 10 and user >= 1:
-        if user > guess:
-          print('Lower. Try again')
-          break
-        elif user < guess:
-          print('Higher. Try again')
-          break
-        elif user == guess:
-          print('Correct! Here is your reward (5 tickets)')
-          arr[2] += 5
-          dic[arr[0]] = {
-      "Password" : arr[1],
-      "Tickets" : arr[2]
-      }
-          return 
-      else:
-        print('Enter a valid number.')
+# ---------------- TIC TAC TOE ----------------
 
 def output_board(arr):
   print('=====TIC TAC TOE=====\n')
@@ -278,14 +284,16 @@ def output_board(arr):
   print('-'*11)
   print(f' {arr[6]} | {arr[7]} | {arr[8]} ')
 
+
 def player_decision(arr,acc_values,dic):
   global board
   global winner
-  board = ['-','-','-',
-         '-','-','-',
-         '-','-','-']
+
+  board = ['-']*9
   winner = None
+
   currentPlayer = random.randint(0,1)
+
   if currentPlayer == 0:
     output_board(arr)
     print('You make the first move.')
@@ -294,22 +302,18 @@ def player_decision(arr,acc_values,dic):
     print('I make the first move...')
     upd_board(arr,1,acc_values,dic)
 
+
 def user_change(arr):
   while True:
-    while True:
-      try:
-        user = int(input('Enter a number from 1-9: '))
+    try:
+      user = int(input('Enter a number from 1-9: '))
+      if 1 <= user <= 9 and arr[user-1] == '-':
+        arr[user-1] = 'O'
+        output_board(arr)
         break
-      except ValueError:
-        print('Please enter a valid number.')
-    if user >= 1 and user <= 9 and arr[user - 1] == '-':
-      arr[user - 1] = 'O'
-      output_board(arr)
-      break
-    elif user < 1 or user > 9:
-      print('Please enter a valid number')
-    else:
-      print('Oops player is already in that spot!')
+    except ValueError:
+      print('Please enter a valid number.')
+
 
 def bot_change(arr):
   while True:
@@ -319,117 +323,84 @@ def bot_change(arr):
       output_board(arr)
       break
 
+
+def checkHorizontal(arr):
+  global winner
+  if arr[0] == arr[1] == arr[2] != '-':
+    winner = 'human' if arr[0]=='O' else 'bot'
+  elif arr[3] == arr[4] == arr[5] != '-':
+    winner = 'human' if arr[3]=='O' else 'bot'
+  elif arr[6] == arr[7] == arr[8] != '-':
+    winner = 'human' if arr[6]=='O' else 'bot'
+
+
+def checkVertical(arr):
+  global winner
+  if arr[0] == arr[3] == arr[6] != '-':
+    winner = 'human' if arr[0]=='O' else 'bot'
+  elif arr[1] == arr[4] == arr[7] != '-':
+    winner = 'human' if arr[1]=='O' else 'bot'
+  elif arr[2] == arr[5] == arr[8] != '-':
+    winner = 'human' if arr[2]=='O' else 'bot'
+
+
+def checkDiagonal(arr):
+  global winner
+  if arr[0] == arr[4] == arr[8] != '-':
+    winner = 'human' if arr[0]=='O' else 'bot'
+  elif arr[2] == arr[4] == arr[6] != '-':
+    winner = 'human' if arr[2]=='O' else 'bot'
+
+
 def upd_board(arr,value,acc_values,dic):
   global winner
+
   if value == 1:
     while True:
       bot_change(arr)
       user_change(arr)
+
       checkHorizontal(arr)
       checkVertical(arr)
       checkDiagonal(arr)
+
       if winner == 'human':
         print("Congratulations! You win!")
         acc_values[2] += 5
         dic[acc_values[0]]["Tickets"] = acc_values[2]
+        save_users(dic)
         break
+
       elif winner == 'bot':
         print("Oops. You lost.")
         break
+
       elif '-' not in arr:
-        print("It's a draw!")
+        print("It's a draw! No points awarded.")
         break
 
   elif value == 0:
     while True:
       user_change(arr)
       bot_change(arr)
+
       checkHorizontal(arr)
       checkVertical(arr)
       checkDiagonal(arr)
+
       if winner == 'human':
         print("Congratulations! You win!")
         acc_values[2] += 5
         dic[acc_values[0]]["Tickets"] = acc_values[2]
+        save_users(dic)
         break
+
       elif winner == 'bot':
         print("Oops. You lost.")
         break
+
       elif '-' not in arr:
-        print("It's a draw!")
+        print("It's a draw! No points awarded.")
         break
-
-
-def checkVertical(arr):
-  global winner
-  if arr[0] == arr[3] == arr[6] and arr[0] != '-':
-    if arr[0] == 'O':
-      winner = 'human'
-      return
-    else:
-      winner = 'bot'
-      return
-
-  elif arr[1] == arr[4] == arr[7] and arr[1] != '-':
-    if arr[1] == 'O':
-      winner = 'human'
-      return
-    else:
-      winner = 'bot'
-      return
-
-  elif arr[2] == arr[5] == arr[8] and arr[2] != '-':
-    if arr[2] == 'O':
-      winner = 'human'
-      return
-    else:
-      winner = 'bot'
-      return
-
-def checkHorizontal(arr):
-  global winner
-
-  if arr[0] == arr[1] == arr[2] and arr[0] != '-':
-    if arr[0] == 'O':
-      winner = 'human'
-      return
-    else:
-      winner = 'bot'
-      return
-
-  elif arr[3] == arr[4] == arr[5] and arr[3] != '-':
-    if arr[3] == 'O':
-      winner = 'human'
-      return
-    else:
-      winner = 'bot'
-      return
-
-  elif arr[6] == arr[7] == arr[8] and arr[6] != '-':
-    if arr[6] == 'O':
-      winner = 'human'
-      return
-    else:
-      winner = 'bot'
-      return
-
-def checkDiagonal(arr):
-  global winner
-
-  if arr[0] == arr[4] == arr[8] and arr[0] != '-':
-    if arr[0] == 'O':
-      winner = 'human'
-      return
-    else:
-      winner = 'bot'
-      return
-
-  elif arr[2] == arr[4] == arr[6] and arr[2] != '-':
-    if arr[2] == 'O':
-      winner = 'human'
-      return
-    else:
-      winner = 'bot'
-      return
 
 main(users)
