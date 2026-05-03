@@ -1,27 +1,27 @@
-# Secure arcade system
+# Secure Arcade System
 
 ## Overview
 This is a Python-based arcade system that allows users to:
-- Create secure accounts with randomly generated passwords
-- Log in and manage tickets
-- Play mini-games to earn tickets
-- Redeem tickets for prizes
+- Create secure accounts with randomly generated passwords  
+- Log in and manage tickets  
+- Play mini-games to earn tickets  
+- Redeem tickets for prizes  
 
-The system simulates a simple arcade experience with account handling and rewards.
+The system simulates a simple arcade experience with account handling, rewards, and persistent data storage using JSON.
 
 ---
 
 ## Features
 
 ### Account Management
-- Create a new account with a secure random password
-- Login system with username and password verification
-- View account details (username, password, tickets)
+- Create a new account with a secure random password  
+- Login system with username and password verification  
+- View account details (username, password, tickets)  
 
 ### Ticket System
-- Users start with 20 tickets
-- Earn tickets by playing games
-- Spend tickets to redeem prizes
+- Users start with 20 tickets  
+- Earn tickets by playing games  
+- Spend tickets to redeem prizes  
 
 ### Redemption System
 Users can exchange tickets for rewards:
@@ -34,25 +34,25 @@ Users can exchange tickets for rewards:
 ## Games Available
 
 ### 1. Number Guessing Game
-- Guess a number between 1–10
-- You have 3 attempts
-- Reward: +5 tickets if correct
+- Guess a number between 1–10  
+- You have 3 attempts  
+- Reward: +5 tickets if correct  
 
 ### 2. Tic Tac Toe
-- Play against a bot
-- Random turn order (player or bot starts)
-- Reward: +5 tickets if you win
+- Play against a bot  
+- Random turn order (player or bot starts)  
+- Reward: +5 tickets if you win  
 
 ---
 
 ## Password Generator
-- Uses `secrets` module for strong randomness
-- Password length: 8–15 characters
+- Uses `secrets` module for secure randomness  
+- Password length: 8–15 characters  
 - Includes:
-  - Uppercase letters
-  - Lowercase letters
-  - Numbers
-  - Special characters
+  - Uppercase letters  
+  - Lowercase letters  
+  - Numbers  
+  - Special characters  
 
 ---
 
@@ -60,26 +60,25 @@ Users can exchange tickets for rewards:
 
 ### Program Flow
 1. Start menu:
-   - Create account
-   - Log in
+   - Create account  
+   - Log in  
 2. After login:
-   - Account info
-   - Redeem tickets
-   - Play games
-   - Log out
+   - Account info  
+   - Redeem tickets  
+   - Play games  
+   - Log out  
 
 ---
 
 ## Data Structure
 
-User data is stored in a dictionary:
+User data is stored using a JSON-based dictionary format.
 
+### Structure
 ```python
-users = {
+{
     "Username": {
         "Password": "password",
         "Tickets": 20
     }
 }
-```
-
